@@ -1,8 +1,8 @@
 # data sources
 
 I just copy-pasted data from wikipedia pages to website files. There is a
-possibly scrapable french election site, but why do that when someone in the
-wikiworld already did?
+[possibly scrapable french election site](http://elections.interieur.gouv.fr/presidentielle-2017/032/062/index.html),
+but why do that when someone in the wikiworld already did?
 
 Data sources:
 
