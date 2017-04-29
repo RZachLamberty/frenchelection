@@ -149,26 +149,3 @@ def test():
     x = us[['state', 'num_reps']].merge(evs, on='state', suffixes=('', '_1'))
 
     assert (x.num_reps == x.num_reps_1).all()
-
-
-# ----------------------------- #
-#   Command line                #
-# ----------------------------- #
-
-def parse_args():
-    """ Take a log file from the commmand line """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-x", "--xample", help="An Example", action='store_true')
-
-    args = parser.parse_args()
-
-    logger.debug("arguments set to {}".format(vars(args)))
-
-    return args
-
-
-if __name__ == '__main__':
-
-    args = parse_args()
-
-    main()
