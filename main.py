@@ -18,6 +18,7 @@ import os
 
 import pandas as pd
 
+import representatives
 
 
 # ----------------------------- #
@@ -53,16 +54,21 @@ def main(fRes=FRES, fPop=FPOP):
     population = population[['Department', 'Legal Population in 2013']]
     population.columns = ['department', 'population']
 
-    # assign electoral votes based on population
+    # assign electoral vote numbers based on population
+    population.loc[:, 'num_sen'] = 2
 
-    # join the two
+    reps = representatives.num_reps(
+        population[['department', 'population']], regionColname='department'
+    )
 
-    return results, population
+    population = population.merge(reps, on='department')
 
+    population.loc[:, 'evs'] = population.num_sen + population.num_reps
+
+    # join the two and return
+    return population.merge(results, on='department')
 
 
 if __name__ == '__main__':
-
-    args = parse_args()
-
-    main()
+    x = main()
+    print(x.groupby('em_wins').evs.sum())
