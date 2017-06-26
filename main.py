@@ -50,6 +50,13 @@ def load_results(fres=FRES):
     return results
 
 
+def load_population(fpop=FPOP):
+    population = pd.read_csv(fpop, delimiter='\t')
+    population = population[['Department', 'Legal Population in 2013']]
+    population.columns = ['department', 'population']
+    return population
+
+
 def main(fres=FRES, fpop=FPOP):
     """docstring
 
@@ -60,7 +67,7 @@ def main(fres=FRES, fpop=FPOP):
     raises:
 
     """
-    results = load_results()
+    results = load_results(fres)
 
     print('\nfirst round results ---------------------------------------------')
     print(results.loc['Total', :])
@@ -68,9 +75,7 @@ def main(fres=FRES, fpop=FPOP):
     results = results.drop('Total')
     results = results.reset_index()
 
-    population = pd.read_csv(fpop, delimiter='\t')
-    population = population[['Department', 'Legal Population in 2013']]
-    population.columns = ['department', 'population']
+    population = load_population(fpop)
 
     # assign electoral vote numbers based on population
     population.loc[:, 'num_sen'] = 2
