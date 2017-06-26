@@ -35,7 +35,22 @@ FPOP = os.path.join(DATA, 'population.tsv')
 #   Main routine                #
 # ----------------------------- #
 
-def main(fRes=FRES, fPop=FPOP):
+def load_results(fres=FRES):
+    """load french runoff election results and determine which candidate won
+    each department
+
+    """
+    results = pd.read_csv(fres, delimiter='\t')
+    results.columns = [c.lower() for c in results.columns]
+    pcts = [c for c in results.columns if '_pct' in c]
+    results = results.set_index('department')[pcts]
+    results.loc[:, "winner"] = results.idxmax(axis=1).str.extract(
+        '(\w+)_pct', expand=False
+    )
+    return results
+
+
+def main(fres=FRES, fpop=FPOP):
     """docstring
 
     args:
@@ -45,12 +60,15 @@ def main(fRes=FRES, fPop=FPOP):
     raises:
 
     """
-    results = pd.read_csv(fRes, delimiter='\t')
-    results.columns = [_.lower() for _ in results.columns]
-    results = results[['department', 'em_votes', 'mlp_votes']]
-    results.loc[:, 'em_wins'] = results.em_votes > results.mlp_votes
+    results = load_results()
 
-    population = pd.read_csv(fPop, delimiter='\t')
+    print('\nfirst round results ---------------------------------------------')
+    print(results.loc['Total', :])
+
+    results = results.drop('Total')
+    results = results.reset_index()
+
+    population = pd.read_csv(fpop, delimiter='\t')
     population = population[['Department', 'Legal Population in 2013']]
     population.columns = ['department', 'population']
 
@@ -71,4 +89,9 @@ def main(fRes=FRES, fPop=FPOP):
 
 if __name__ == '__main__':
     x = main()
-    print(x.groupby('em_wins').evs.sum())
+
+    print('\nelectoral vote totals -------------------------------------------')
+    print(x.groupby('winner').evs.sum())
+
+    print('\nelectoral vote percentages --------------------------------------')
+    print(x.groupby('winner').evs.sum() / x.evs.sum())
